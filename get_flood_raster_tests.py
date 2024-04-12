@@ -20,6 +20,15 @@ plt.xlim(0, 1)
 # make a vertical line for the 2ft mark
 plt.axvline(0.61, color='r', linestyle='--')
 
+# add a legend
+plt.legend(['Total Days Flooded', '2ft Threshold'])
+
+# add a title
+plt.title(f'Total Days Flooded by Threshold for {scenario} Scenario')
+
+# save to viz folder as png
+plt.savefig(f'./viz/{scenario}_threshold_to_days.png')
+
 #%%
 ## TEST 2: make a dummy dem_xr to test
 dem_xr = xr.DataArray(

@@ -2,4 +2,6 @@ inputData/
 tidal_surface/
 viz/
 *.DS_Store
+__pycache__/
+.conda/
 
