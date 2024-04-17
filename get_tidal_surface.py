@@ -1,3 +1,4 @@
+#%%
 import pandas as pd
 from scipy.interpolate import griddata
 from get_flood_raster_KSC import calculate_flooding_days, threshold_to_days, load_dem
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 
 NOAA_SLR_DEM_PATH = './inputData/NOAA_SLR_DEM/NOAA_SLR_DEM_J995345.tif'
 dem_xr = load_dem(NOAA_SLR_DEM_PATH) #
-
+#%%
 # Export a zeros raster in MHHW
 zeros = xr.zeros_like(dem_xr)
 
@@ -30,7 +31,7 @@ zeros = zeros.stack(z=('x', 'y'))
 # export to csv, do not include 'spatial_ref' column
 zeros.to_dataframe(name='zeros').drop(columns='spatial_ref').to_csv('./viz/zeros.csv', index=False)
 
-
+#%%
 ## RUN VDATUM MANUALLY, THIS IS TO BE UPDATED
 input_file = './viz/zeros.csv'
 output_file = './tidal_surface/zeros_New.txt'
@@ -78,8 +79,16 @@ tidal_surface = xr.DataArray(
 )
 # %%
 # save the tidal surface as xarray
-tidal_surface.rio.write_crs(dem_xr.rio.crs)
+
+tidal_surface = tidal_surface.rio.write_crs(dem_xr.rio.crs)
+
+#copy the crs from the dem_xr.rio.crs
+
+
+
 tidal_surface.attrs = dem_xr.attrs
+
+#%%
 tidal_surface.to_netcdf('./tidal_surface/tidal_surface.nc')
 
 #TODO: Do we need to save the tidal surface as a geotiff? Or netcdf? 
