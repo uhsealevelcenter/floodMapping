@@ -59,11 +59,14 @@ dem_xr = load_dem(NOAA_SLR_DEM_PATH)
 mhhw_xr = load_dem(TIDAL_SURFACE_PATH)
 mhhw_xr_aligned = mhhw_xr.rio.reproject_match(dem_xr)
 
-scenario = 'int_low'
+scenario = 'int'
 year = 2100
 scenario_dir = f'./flood_days_raster/{scenario}'
 
 flooding_days = calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year)
+
+os.makedirs(scenario_dir, exist_ok=True)
+
 flooding_days.rio.to_raster(os.path.join(scenario_dir, f'{year}.tif'))
 
 #open this raster in QGIS to check stuff, OR:
