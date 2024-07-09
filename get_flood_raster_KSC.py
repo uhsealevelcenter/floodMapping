@@ -21,7 +21,8 @@ TRIDENT_MHHW = 0.336  # meters MHHW from NOAA datum info (https://tidesandcurren
 SCENARIOS = ['high', 'int', 'int_high', 'int_low', 'low']
 YEARS = np.arange(2020, 2101, 10)  # Decadal intervals
 FLOOD_DAYS_RASTER_DIR = './flood_days_raster'
-TGDATA_DIR = './inputData/TGanalysis'
+TGDATA_DIR_COAST = './inputData/TGanalysis'
+TGDATA_DIR_INLAND = './inputData/02248380'
 #%%
 
 def load_dem(file_path=NOAA_SLR_DEM_PATH):
@@ -121,7 +122,11 @@ def calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year):
         days_per_year,
         coords=dem_xr.coords,
         dims=dem_xr.dims,
-        attrs={'crs': dem_xr.rio.crs, 'scenario': scenario, 'year': year, 'notes': 'DEM under MHHW surface denoted by -1'}
+        attrs={'crs': dem_xr.rio.crs, 
+               'scenario': scenario, 
+               'year': year, 
+               'notes': 'DEM under MHHW surface denoted by -1',
+               'percentile': '50'}
     )
 
 #%%
@@ -138,7 +143,7 @@ def main():
         os.makedirs(scenario_dir, exist_ok=True)
         for year in YEARS:
             flooding_days = calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year)
-            flooding_days.rio.to_raster(os.path.join(scenario_dir, f'{year}.tif'))
+            flooding_days.rio.to_raster(os.path.join(scenario_dir, f'{year}_{scenario}_per50.tif'))
 
 #%%
 if __name__ == '__main__':
