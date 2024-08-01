@@ -98,7 +98,7 @@ dem_mhhw_xr = xr.DataArray(
 dem_mhhw_xr = dem_mhhw_xr.isel(y=slice(300, dem_xr.shape[0]), x=slice(0,dem_xr.shape[1]-300))
 #%%
 # Define parameters
-elevation_coords = np.arange(-0.34, 3.8, 0.01)
+elevation_coords = np.arange(-1.00, -0.34, 0.01)
 structure = generate_binary_structure(2, 2)
 dilation_iterations = 1
 ocean_pt = (dem_mhhw_xr.y.max(), dem_mhhw_xr.x.max())
@@ -145,6 +145,6 @@ plt.scatter(west_inland_pt[1], west_inland_pt[0], color='y', s=100)
 
 # %%
 # plot ./connected_masks/mask_combined_1.00mMHHW.nc
-mask_combined = xr.open_dataset('./connected_masks/mask_combined_0.10mMHHW.nc')
+mask_combined = xr.open_dataset('./connected_masks/mask_combined_0.00mMHHW.nc')
 mask_combined['mask_combined'][::10, ::10].plot()
 # %%

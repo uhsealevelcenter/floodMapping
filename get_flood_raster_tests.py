@@ -11,12 +11,12 @@ import cartopy.crs as ccrs
 #TEST 1: plot the flooding days by threshold
 #plot totals by threshold, with x-axis as threshold and y-axis as total days flooded
 
-scenario = 'int_low'
+scenario = 'high'
 df_inland = threshold_to_days(scenario, TG_SOURCE='./inputData/02248380_MHHW')
 df_coast = threshold_to_days(scenario, TG_SOURCE='./inputData/8721604_MHHW')
 
-plt.plot(df_inland.loc[2100])
-plt.plot(df_coast.loc[2100])
+plt.plot(df_inland.loc[2050])
+plt.plot(df_coast.loc[2050])
 plt.xlabel('Threshold (m)')
 plt.ylabel('Total Days Flooded')
 # only look at 0-1m for now
@@ -32,12 +32,12 @@ plt.legend(['Total Days Flooded Inland','Total Days Flooded Coast', '2ft Thresho
 plt.title(f'Total Days Flooded by Threshold for {scenario} Scenario')
 
 # save to viz folder as png
-plt.savefig(f'./viz/{scenario}_threshold_to_days.png')
+plt.savefig(f'./viz/{scenario}_threshold_to_days_2020.png')
 
 #%%
 ## TEST 2: make a dummy dem_xr to test
 dem_xr = xr.DataArray(
-    np.array([[6.481, 0.239, 0.614, 0.832], [0.68, 0.45, 0.61, 0.37], [0.48, 0.2, 0, 0.4], [0.48, 0.2, 0.61, 0.6]]),
+    np.array([[6.481, 0.239, 0.614, -0.832], [0.68, 0.45, 0.61, 0.37], [0.48, 0.2, 0, 0.4], [0.48, 0.2, 0.61, 0.6]]),
     coords={'y': np.arange(4), 'x': np.arange(4)},
     dims=['y', 'x'],
     attrs={'crs': 'EPSG:26917'}
@@ -65,8 +65,8 @@ dem_xr = load_dem(NOAA_SLR_DEM_PATH)
 mhhw_xr = load_dem(TIDAL_SURFACE_PATH)
 mhhw_xr_aligned = mhhw_xr.rio.reproject_match(dem_xr)
 
-scenario = 'int'
-year = 2100
+scenario = 'high'
+year = 2020
 scenario_dir = f'./flood_days_raster/{scenario}'
 
 # flooding_days = calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year, TG_SOURCE='./inputData/02248380')
@@ -167,8 +167,8 @@ mhhw_xr_aligned = mhhw_xr.rio.reproject_match(dem_xr)
 dem_xr = dem_xr.isel(y=slice(300, dem_xr.shape[0]), x=slice(0,dem_xr.shape[1]-300))
 mhhw_xr_aligned = mhhw_xr_aligned.isel(y=slice(300, mhhw_xr_aligned.shape[0]), x=slice(0,mhhw_xr_aligned.shape[1]-300))
 #%%
-scenario = 'int_low'
-year = 2100
+scenario = 'high'
+year = 2020
 flooding_days, elevations = calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year)
 #%%
 # plot the flooding days

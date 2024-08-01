@@ -80,13 +80,21 @@ def threshold_to_days(scenario,TG_SOURCE):
     """
 
     totals_by_threshold = {}
-    for threshold in np.arange(-0.34, 3.30, 0.01):  # Thresholds from 0.2 to 3 meters
+    for threshold in np.arange(-0.5, 3.3, 0.01):  # Thresholds from 0.2 to 3 meters
+        rounded_threshold = np.round(threshold, 2)
+        if rounded_threshold < 0:
+            fname = f'{int(rounded_threshold * 100):04d}.json'
+        elif rounded_threshold >= 0:
+            fname = f'{int(rounded_threshold * 100):03d}.json'
+
         try:
-            with open(os.path.join(TG_SOURCE, f'{scenario}/{int(threshold * 100):03d}.json')) as f:
+            with open(os.path.join(TG_SOURCE, f'{scenario}/{fname}')) as f:
                 data = json.load(f)
-            totals_by_threshold[np.round(threshold,2)] = data['annual_percentiles']['percentiles']['50']
+            totals_by_threshold[rounded_threshold] = data['annual_percentiles']['percentiles']['50']
         except:
-            totals_by_threshold[np.round(threshold,2)] = 365
+            file_path = os.path.join(TG_SOURCE, f'{scenario}/{fname}')
+            print(f"File not found for threshold {rounded_threshold}: {file_path}")
+            totals_by_threshold[rounded_threshold] = 365
 
 
     # turn this into a dataframe
@@ -134,8 +142,6 @@ def calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year, TG_SOURCE):
     # days_per_year[elevations<=0] = -1  # Land under 0 NAVD88
     days_per_year[dem_xr.values<=-99] = -99  # No data
 
-    
-
     return xr.DataArray(
         days_per_year,
         coords=dem_xr.coords,
@@ -180,7 +186,7 @@ def calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year):
 
     days_per_year = np.full_like(elevations, np.nan)
 
-    for elevation in np.arange(-0.34, 3.3, 0.01):
+    for elevation in np.arange(-0.5, 3.3, 0.01):
         elevation = np.round(elevation, 2)
         mask_file = f'./connected_masks/mask_combined_{elevation:.2f}mMHHW.nc'
         with xr.open_dataset(mask_file) as mask_ds:
@@ -193,6 +199,8 @@ def calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year):
             # days_per_year[(mask_combined == 1) & np.isnan(days_per_year) & (elevations+0.01 == elevation)] = df_Inland.loc[year][elevation]
             days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 0)] = 500
             days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 2)] = 1000
+            days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 1)] = 2000
+
 
     days_per_year = xr.DataArray(
                          days_per_year,
@@ -204,10 +212,12 @@ def calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year):
                                 'percentile': '50'}
                      )
 
-    days_per_year = days_per_year.where(elevations < 3.01, 0) #set elevations above 3.01m to 0 days per year
+    days_per_year = days_per_year.where(elevations < 3.3, 0) #set elevations above 3.01m to 0 days per year
     # days_per_year = days_per_year.where((elevations >= df_Inland_flood) & ~np.isnan(days_per_year), 1000) #set elevations below RSL level to 1000
+    days_per_year = days_per_year.where(elevations == -0.5, -50)
     days_per_year = days_per_year.where(dem_xr != -99, -99)
     days_per_year = days_per_year.where(dem_xr != -999999, -999999)
+    
 
 
 
