@@ -10,7 +10,7 @@ import os
 
 #%% Function to create a mask for a single elevation threshold and save to NetCDF
 def create_and_save_mask(dem_xr_mhhw, threshold, ocean_pt, inland_pt,north_inland_pt,west_inland_pt, structure, dilation_iterations, output_dir):
-    threshold = round(threshold, 2)
+    threshold = threshold.round(2)
     print(f"Processing elevation threshold: {threshold}")
     
     binary_mask = dem_xr_mhhw.round(2) < threshold
@@ -25,7 +25,7 @@ def create_and_save_mask(dem_xr_mhhw, threshold, ocean_pt, inland_pt,north_inlan
     mask_to_apply_north_inland = labeled_array == north_inland_label
     mask_to_apply_west_inland = labeled_array == west_inland_label
 
-    mask_disconnected = (dem_xr_mhhw < threshold) & (~mask_to_apply_coast) & (~mask_to_apply_inland) & (~mask_to_apply_north_inland) & (~mask_to_apply_west_inland)
+    mask_disconnected = (dem_xr_mhhw <= threshold) & (~mask_to_apply_coast) & (~mask_to_apply_inland) & (~mask_to_apply_north_inland) & (~mask_to_apply_west_inland)
     mask_to_apply_inland = mask_to_apply_inland | mask_to_apply_north_inland | mask_to_apply_west_inland
 
     mask_combined = np.zeros_like(mask_disconnected, dtype=np.int8)
@@ -98,7 +98,7 @@ dem_mhhw_xr = xr.DataArray(
 dem_mhhw_xr = dem_mhhw_xr.isel(y=slice(300, dem_xr.shape[0]), x=slice(0,dem_xr.shape[1]-300))
 #%%
 # Define parameters
-elevation_coords = np.arange(-1.00, -0.34, 0.01)
+elevation_coords = np.arange(2.71, 3.8, 0.01)
 structure = generate_binary_structure(2, 2)
 dilation_iterations = 1
 ocean_pt = (dem_mhhw_xr.y.max(), dem_mhhw_xr.x.max())
@@ -145,6 +145,12 @@ plt.scatter(west_inland_pt[1], west_inland_pt[0], color='y', s=100)
 
 # %%
 # plot ./connected_masks/mask_combined_1.00mMHHW.nc
-mask_combined = xr.open_dataset('./connected_masks/mask_combined_0.00mMHHW.nc')
+mask_combined = xr.open_dataset('./connected_masks/mask_combined_-0.56mMHHW.nc')
 mask_combined['mask_combined'][::10, ::10].plot()
+# %%
+
+# plot dem_xr, but only show where mask_combined == 0
+
+# only show elevations from -1 to 0
+dem_xr.where((mask_combined['mask_combined'] == 0) & (dem_xr > -1) & (dem_xr < -0.5))[::10,::10].plot()
 # %%

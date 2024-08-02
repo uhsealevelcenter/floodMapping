@@ -11,12 +11,12 @@ import cartopy.crs as ccrs
 #TEST 1: plot the flooding days by threshold
 #plot totals by threshold, with x-axis as threshold and y-axis as total days flooded
 
-scenario = 'high'
+scenario = 'int_low'
 df_inland = threshold_to_days(scenario, TG_SOURCE='./inputData/02248380_MHHW')
 df_coast = threshold_to_days(scenario, TG_SOURCE='./inputData/8721604_MHHW')
 
-plt.plot(df_inland.loc[2050])
-plt.plot(df_coast.loc[2050])
+plt.plot(df_inland.loc[2020])
+plt.plot(df_coast.loc[2020])
 plt.xlabel('Threshold (m)')
 plt.ylabel('Total Days Flooded')
 # only look at 0-1m for now
@@ -29,7 +29,7 @@ plt.axvline(0.61, color='r', linestyle='--')
 plt.legend(['Total Days Flooded Inland','Total Days Flooded Coast', '2ft Threshold'])
 
 # add a title
-plt.title(f'Total Days Flooded by Threshold for {scenario} Scenario')
+plt.title(f'Total Days Flooded in 2070 by Threshold for {scenario} Scenario')
 
 # save to viz folder as png
 plt.savefig(f'./viz/{scenario}_threshold_to_days_2020.png')
