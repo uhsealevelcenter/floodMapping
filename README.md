@@ -18,9 +18,13 @@ Looking at the intermediate-low scenario, we're basically taking this plot (for 
 
 to these plots:
 
-![Flood Mapping](vizForMarkdown/int_low_threshold_to_days_2020.png)
-![Flood Mapping](vizForMarkdown/int_low_threshold_to_days_2070.png)
-and turning it this:
+<div style="display: flex; justify-content: space-around;">
+    <img src="vizForMarkdown/int_low_threshold_to_days_2020.png" alt="Flood Mapping 2020" style="width: 50%;">
+    <img src="vizForMarkdown/int_low_threshold_to_days_2070.png" alt="Flood Mapping 2070" style="width: 50%;">
+</div>
+
+
+and turning it into this:
 
 ![Animation](vizForMarkdown/htf_int_low_animation_MHHW.gif)
 
