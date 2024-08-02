@@ -28,3 +28,5 @@ and turning it into this:
 
 ![Animation](vizForMarkdown/htf_int_low_animation_MHHW.gif)
 
+Read the [method](Method.md) page for more detail.
+
