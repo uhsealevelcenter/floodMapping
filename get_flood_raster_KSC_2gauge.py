@@ -25,9 +25,6 @@ TGDATA_DIR_COAST = './inputData/8721604_MHHW'
 TGDATA_DIR_INLAND = './inputData/02248380_MHHW'
 
 #%%
-# SCENARIOS = ['high', 'int']
-# YEARS = np.arange(2020, 2030, 10)  # Decadal intervals
-#%%
 
 def load_dem(file_path=NOAA_SLR_DEM_PATH):
     """
@@ -135,8 +132,8 @@ def calculate_flooding_days(dem_xr, mhhw_xr_aligned, scenario, year, TG_SOURCE):
 
     days_per_year[elevations>elevation] = 0
 
-    #set nans in days_per_year to 0
-    days_per_year[np.isnan(days_per_year)] = -50    
+    #set nans in days_per_year to -50
+    days_per_year[np.isnan(days_per_year)] = -50    ## How many are there? Should check this.
 
     # Assign special values for land under MHHW and ocean
     # days_per_year[elevations<=0] = -1  # Land under 0 NAVD88
@@ -191,15 +188,10 @@ def calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year):
         mask_file = f'./connected_masks/mask_combined_{elevation:.2f}mMHHW.nc'
         with xr.open_dataset(mask_file) as mask_ds:
             mask_combined = mask_ds['mask_combined'].values
-            # mask_combined[(mask_combined == 0) & (elevations == elevation)] = 999
             days_per_year[(mask_combined == 1) & (elevations == elevation)] = df_Inland.loc[year][elevation] #assume Inland-connected for disconnected
                 #here is where we put the ZONE OF INFLUENCE!!
             days_per_year[(mask_combined == 2) & (elevations == elevation)] = df_Inland.loc[year][elevation]
             days_per_year[(mask_combined == 3) & (elevations == elevation)] = df_Coast.loc[year][elevation]
-            # days_per_year[(mask_combined == 1) & np.isnan(days_per_year) & (elevations+0.01 == elevation)] = df_Inland.loc[year][elevation]
-            # days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 0)] = 500
-            # days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 2)] = 1000
-            # days_per_year[(elevations <= df_Inland_flood) & np.isnan(days_per_year) & (mask_combined == 1)] = 2000
 
 
     days_per_year = xr.DataArray(
@@ -212,9 +204,7 @@ def calculate_flooding_days_with_mask(dem_xr, mhhw_xr_aligned, scenario, year):
                                 'percentile': '50'}
                      )
 
-    days_per_year = days_per_year.where(elevations < 3.3, 0) #set elevations above 3.01m to 0 days per year
-    # days_per_year = days_per_year.where((elevations >= df_Inland_flood) & ~np.isnan(days_per_year), 1000) #set elevations below RSL level to 1000
-    # days_per_year = days_per_year.where(elevations == -0.5, -50)
+    days_per_year = days_per_year.where(elevations < 3.3, 0) #set elevations above 3.3m to 0 days per year  ## QUESTIONABLE
     days_per_year = days_per_year.where(dem_xr != -99, -99)
     days_per_year = days_per_year.where(dem_xr != -999999, -999999)
     
