@@ -12,7 +12,7 @@ from matplotlib.patches import Polygon,Rectangle
 # %%
 # Load ./flood_days_raster/int/2100.tif
 # Load the raster data
-file_path = './flood_days_raster/2100.tif'
+file_path = './flood_days_raster/high/2020_high_per50.tif'
 
 #open the tif file
 ds = xr.open_dataarray(file_path)[0]
@@ -43,7 +43,7 @@ fig, ax = plt.subplots(figsize=(8, 10))
 
 
 # Plot the data with the correct extent for the data in EPSG:26917
-img = ax.imshow(masked_array[::150,::150], extent=[min_x, max_x, min_y, max_y],zorder=2,alpha=0.8)
+img = ax.imshow(masked_array[::10,::10], extent=[min_x, max_x, min_y, max_y],zorder=2,alpha=0.8)
 
 
 
@@ -101,12 +101,12 @@ plt.ylabel('Northing (m)')
 
 # # Add title to the plot
 # title_str = 'Connectedness Mask: '+ str(threshold) +'m NAVD88'
-# plt.title(title_str)
+plt.title(title_str)
 
 # save_path = 'connectedness_mask_'+ str(threshold) + 'm_NAVD88.png'
 
 # # Save the plot as a PNG
-# plt.savefig(save_path, dpi=300, bbox_inches='tight')
+plt.savefig(save_path, dpi=300, bbox_inches='tight')
 
 
 

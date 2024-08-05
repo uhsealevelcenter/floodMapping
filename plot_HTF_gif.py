@@ -11,9 +11,9 @@ import contextily as ctx
 import pandas as pd
 #%%
 # Define custom colormap with specific colors for each category
-cmap = mcolors.ListedColormap(['green', 'orange','magenta', 'cyan', 'blue'])
-boundaries = [-99, 0, 20, 50, 100, 200, 365]
-norm = mcolors.BoundaryNorm(boundaries, cmap.N, clip=True)
+# cmap = mcolors.ListedColormap(['green', 'orange','magenta', 'cyan', 'blue'])
+# boundaries = [-99, 0, 20, 50, 100, 200, 365]
+# norm = mcolors.BoundaryNorm(boundaries, cmap.N, clip=True)
 #%%
 # Define the directory containing the Tif files
 raster_dir = './flood_days_raster'
